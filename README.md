@@ -19,7 +19,7 @@ Cytoscape.jsのグラフをサクッと閲覧したい・PNG画像に出力し�
 <br>
 [Cytoscape.jsのグラフデータのjsonファイル](https://js.cytoscape.org/#notation/elements-json)を読み込み、グラフを表示します。
   - 各要素のデータ(ID、ラベル、色、形状)をインスペクタから確認できる
-  - グラフの「エッジの形式([Edge line](https://js.cytoscape.org/#style/edge-line))」、「ノードの配置形式[layout](https://js.cytoscape.org/#layouts)」を選択可能
+  - グラフの「エッジの形式([Edge line](https://js.cytoscape.org/#style/edge-line))」、「ノードの配置形式[(layout)](https://js.cytoscape.org/#layouts)」を選択可能
   - マウスでノードの座標を編集＋編集後のグラフデータをjsonで保存可能
   - マウスによる座標の編集は、取り消し「Ctrl+z」、やり直し「Ctrl+y」が可能
   - グラフをPNG画像で出力(画質、背景色、透過有無、対象範囲を設定可)
