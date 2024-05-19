@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>cy-minimum-graph-viewr</title>
+
+  <!-- 自分で作ったスタイルシート -->
+  <link rel="stylesheet" href="style.css" />
+
+  <!-- マイクロモーダルのCSS 【MITライセンス】-->
+  <!-- https://github.com/ghosh/Micromodal -->
+  <link rel="stylesheet" href="micromodal.css">
+</head>
+
+<body>
+
+  <div class="top-menu">
+    <button id="manual-help-button">説明＆ヘルプ</button>
+    <button id="read-json-func-button">データを読み込む(json)</button>
+    <button id="add-json-func-button">データを追加する(json)</button>
+    <button id="save-json-func-button">データを保存する(json)</button>
+    <button id="save-json-image-func-button">グラフを画像(PNG)として保存</button>
+  </div>
+
+    <table class="option-panel">
+      <tr>
+        <td>
+          <span id="magnification-panel">
+            拡大倍率:
+            <input type="text" id="magnification-zoom-num" style="width:45px;" readonly>
+          </span>
+
+          <span id="edge-style-panel">
+            <!-- エッジのスタイルを変える方法はないので無理だった -->
+            エッジの形式[<a href="https://js.cytoscape.org/#style/edge-line" target="_blank">Edge line</a>]:
+            <select id="edge_curve">
+              <option value="haystack">haystack(高速だが色々と非対応)</option>
+              <option value="straight">straight(ストレートなやつ)</option>
+              <option value="straight-triangle">straight-triangle(先っぽが細い)</option>
+              <option value="bezier" selected>bezier(多分普通のやつ、おすすめ)</option>
+              <option value="unbundled-bezier">unbundled-bezier(曲がってる)</option>
+              <option value="segments">segments(真ん中で折れてる)</option>
+              <option value="taxi">taxi(階層のようなやつ、おすすめ)</option>
+            </select>
+            <button onclick="change_cy_edge_layout();"> 適用</button>
+          </span>
+
+          <span id="node-style-panel">
+            <!-- レイアウト指定-->
+            ノードの配置形式[<a href="https://js.cytoscape.org/#layouts" target="_blank">layout</a>]:
+            <select id="selectLayout">
+              <option value="null" selected>null(全部0,0にする)</option>
+              <option value="dagre">dagre(階層表示、おすすめ)</option>
+              <option value="grid">grid(グリッド、おすすめ)</option>
+              <option value="random">random(ランダムに配置)</option>
+              <option value="circle">circle(サークル状にする)</option>
+              <option value="concentric">concentric(同心円状にする)</option>
+              <option value="breadthfirst">breadthfirst(幅優先探索)</option>
+              <option value="cose">cose(わからない)</option>
+            </select>
+            <button id="changeLayout" onclick="changeLayout()">適用</button>
+          </span>
+          <br>
+        </td>
+      </tr>
+    </table>
+
+    <div class="graph-zone">
+
+      <div id="cyWrapper">
+        <div id="cy"></div>
+      </div>
+
+      <div id="inspector-folding-button" class="spread" data-mode="-">ー</div>
+
+
+      <div id="inspector-panel" class="inspector">
+
+        <div id="editor-setting-panel">
+          <h3>エディタの設定をここに作る</h3>
+          <br>
+
+          <p>背景色を選択する<input type="color" id="change-editor-color" value="#e2ffe6"></p>
+          <hr>
+          <button id="editor-setting-change-button">ここをクリックで設定を反映する</button>
+        </div>
+
+        <div id="node-or-edge-setting-panel" class="disabled">
+
+
+
+          <h3>左クリックしたノード/エッジ</h3>
+
+
+          <span>ノードorエッジ(変更不可)：<input type="text" id="now_elem_group" style="width:40px;" readonly></span>
+          <label></label>
+          <br>
+
+          <span>id(識別用、変更不可)：<input type="text" id="now_elem_id" style="width:55px;" readonly></span>
+          <br><br>
+          <!-- <span>label(表示文字)：<input type="text" id="now_changelabel" style="width:80px;"></span> -->
+          <span>label(表示文字)：<br> <textarea name="" id="now_changelabel" cols="26" rows="1"></textarea></span>
+
+
+          <br><br>
+
+          <span>
+            <label>color(labelの色)：<input type="color" id="now_labelcolor" value="#000000"
+                onchange="apply_colorpick(`now_labelcolor_str`,`now_labelcolor`)"></label>
+            <input type="text" id="now_labelcolor_str" style="width:55px;">
+            <button onclick="apply_colorpick(`now_labelcolor`,`now_labelcolor_str`)">◎</button>
+          </span>
+          <br><br>
+
+          <div id="inspector-node" class="disabled">
+            <hr>
+            <!-- ここのラジオボタンはCSSでreadonlyを強引にやっています。 -->
+            <span>ノードのみの情報<input id="now_elem_type_node" type="radio" name="now_elem_type" readonly></span>
+            <br><br>
+
+            <span>position：</span>
+            <br>
+            <span>x：<input type="text" id="now_pos_x" style="width:80px;"></span>
+            <span>y：<input type="text" id="now_pos_y" style="width:80px;"></span>
+            <br><br>
+
+            <span>parent：<input type="text" id="now_parent" style="width:85px;"></span>
+            <br><br>
+
+            <span>
+              <label>background-color：<br><input type="color" id="now_backgroundcolor" value="#000000"
+                  onchange="apply_colorpick(`now_backgroundcolor_str`,`now_backgroundcolor`)"></label>
+              <input type="text" id="now_backgroundcolor_str" style="width:55px;">
+              <button onclick="apply_colorpick(`now_backgroundcolor`,`now_backgroundcolor_str`)">◎</button>
+            </span>
+            <br><br>
+
+            <span>
+              shape：<select id="now_shape">
+                <option value="ellipse">ellipse</option>
+                <option value="triangle">triangle</option>
+                <option value="round-triangle">round-triangle</option>
+                <option value="rectangle" selected>rectangle</option>
+                <option value="round-rectangle">round-rectangle</option>
+                <option value="barrel">barrel</option>
+                <option value="rhomboid">rhomboid</option>
+                <option value="diamond">diamond</option>
+                <option value="round-diamond">round-diamond</option>
+                <option value="pentagon">round-pentagon</option>
+                <option value="round-pentagon">round-pentagon</option>
+                <option value="hexagon">hexagon</option>
+                <option value="round-hexagon">round-hexagon</option>
+                <option value="heptagon">heptagon</option>
+                <option value="round-heptagon">round-heptagon</option>
+                <option value="octagon">octagon</option>
+                <option value="round-octagon">round-octagon</option>
+                <option value="star">star</option>
+                <option value="tag">tag</option>
+                <option value="round-tag">round-tag</option>
+                <option value="vee">vee</option>
+              </select>
+            </span>
+            <br>
+
+          </div>
+
+          <div id="inspector-edge" class="disabled">
+            <hr>
+
+            <span>エッジのみの情報<input id="now_elem_type_edge" type="radio" name="now_elem_type" readonly></span>
+            <br>
+
+            <span>source：<input type="text" id="now_source" value="" style="width:55px;"></span>
+            <span>target：<input type="text" id="now_target" value="" style="width:55px;"></span>
+            <br>
+
+            <span>
+              <label>line-color：<input type="color" id="now_linecolor" value="#000000"
+                  onchange="apply_colorpick(`now_linecolor_str`,`now_linecolor`)"></label>
+              <input type="text" id="now_linecolor_str" value="#000000" style="width:55px;">
+              <button onclick="apply_colorpick(`now_linecolor`,`now_linecolor_str`)">◎</button>
+            </span>
+            <br><br>
+
+            <span>
+              <label>target-arrow-color：<input type="color" id="now_t_arr_color" value="#000000"
+                  onchange="apply_colorpick(`now_t_arr_color_str`,`now_t_arr_color`)"></label>
+              <input type="text" id="now_t_arr_color_str" value="#000000" style="width:55px;">
+              <button onclick="apply_colorpick(`now_t_arr_color`,`now_t_arr_color_str`)">◎</button>
+            </span>
+            <br>
+
+            <span>
+              target-arrow-shape：<select id="now_t_arr_shape">
+                <option value="none">none</option>
+                <option value="triangle" selected>triangle</option>
+                <option value="triangle-tee">triangle-tee</option>
+                <option value="circle-triangle">circle-triangle</option>
+                <option value="triangle-cross">triangle-cross</option>
+                <option value="triangle-backcurve">triangle-backcurve</option>
+                <option value="vee">vee</option>
+                <option value="tee">tee</option>
+                <option value="square">square</option>
+                <option value="circle">circle</option>
+                <option value="diamond">diamond</option>
+                <option value="chevron">chevron</option>
+              </select>
+            </span>
+
+            <br>
+
+            <span>
+              <label>source-arrow-color：<input type="color" id="now_s_arr_color" value="#000000"
+                  onchange="apply_colorpick(`now_s_arr_color_str`,`now_s_arr_color`)"></label>
+              <input type="text" id="now_s_arr_color_str" value="#000000" style="width:55px;">
+              <button onclick="apply_colorpick(`now_s_arr_color`,`now_s_arr_color_str`)">◎</button>
+            </span>
+
+            <br>
+
+            <span>
+              source-arrow-shape：<select id="now_s_arr_shape">
+                <option value="none" selected>none</option>
+                <option value="triangle">triangle</option>
+                <option value="triangle-tee">triangle-tee</option>
+                <option value="circle-triangle">circle-triangle</option>
+                <option value="triangle-cross">triangle-cross</option>
+                <option value="triangle-backcurve">triangle-backcurve</option>
+                <option value="vee">vee</option>
+                <option value="tee">tee</option>
+                <option value="square">square</option>
+                <option value="circle">circle</option>
+                <option value="diamond">diamond</option>
+                <option value="chevron">chevron</option>
+              </select>
+            </span>
+            <br>
+
+          </div>
+        </div>
+
+
+      </div>
+
+
+    </div>
+    <span>カーソルの座標</span>
+    <label>x： <input type="text" id="mousecursor-x-pos" value="" style="width:150px;" readonly></label>
+    <label>y： <input type="text" id="mousecursor-y-pos" value="" style="width:150px;" readonly></label>
+    <span>
+      カーソル上のノード/エッジのidを表示：<input type="text" id="qmenu_mouseover_elem_id" value="" style="width:85px;" readonly>
+    </span>
+    <span class="disabled">
+      labelを表示：<input type="text" id="qmenu_mouseover_elem_label" value="" style="width:100px;" readonly>
+    </span>
+
+    <input type="hidden" value="" id="HiddenNowJsonData">
+    <input type="hidden" value="1" id="cy_zoom">
+    <input type="hidden" value="0" id="cy_pan_x">
+    <input type="hidden" value="0" id="cy_pan_y">
+
+
+
+
+    <!-- 右クリックのノード編集機能で使用するモーダルメニュー -->
+    <!--  https://pengi-n.co.jp/blog/js-micromodal/#i-7-->
+    <!--  -->
+    <!-- css-library\micromodal.cssの各項目にz-indexを指定しないとcytoscape.jsと要素被ります -->
+
+    <!-- 説明とヘルプのモーダルウィンドウ -->
+    <div class="modal micromodal-slide" id="manual-help-window" aria-hidden="true">
+      <div class="modal__overlay" tabindex="-1" data-micromodal-close>
+        <div class="modal__container" role="dialog" aria-modal="true" aria-labelledby="modal-1-title">
+          <header class="modal__header">
+            <h2 class="modal__title" id="modal-1-title">
+              ヘルプ・JSONのデータ形式説明
+            </h2>
+            <button class="modal__close" aria-label="Close modal" data-micromodal-close></button>
+          </header>
+          <main class="modal__content" id="modal-1-content">
+            <h2>あとで作る</h2>
+          </main>
+          <footer class="modal__footer">
+            <button class="modal__btn" data-micromodal-close aria-label="Close this dialog window">Close</button>
+          </footer>
+        </div>
+      </div>
+    </div>
+
+    <!-- JSONデータを読み込む部分のモーダルウィンドウ -->
+    <div class="modal micromodal-slide" id="read-json-data-window" aria-hidden="true">
+      <div class="modal__overlay" tabindex="-1" data-micromodal-close>
+        <div class="modal__container" role="dialog" aria-modal="true" aria-labelledby="modal-1-title">
+          <header class="modal__header">
+            <h2 class="modal__title" id="modal-1-title">
+              JSONファイルを読み込みグラフを表示する
+            </h2>
+            <button class="modal__close" aria-label="Close modal" data-micromodal-close></button>
+          </header>
+          <main class="modal__content" id="modal-1-content">
+
+            <div class="graph-load-window">
+
+
+              <div class="graph-load-textarea-panel">
+                <h2 class="modal__title" id="modal-1-title">
+                  JSONを↓にコピペして読み込む
+                </h2><br>
+
+                <textarea id="load-text-json-data" cols="36" rows="15">
+[
+{"data":{"group":"nodes","id":"04_A1","label":"A1","parent":"04_AAA1"},"position":{"x":275.3053023985838,"y":259.7812976793654},"group":"nodes","classes":"",
+"style": {"background-color": "#ffffff", "color": "#000000", "shape": "rectangle"}},
+{"data":{"group":"nodes","id":"04_A2","label":"A2","parent":"04_AAA1"},"position":{"x":342.3053023985838,"y":257.7812976793654},"group":"nodes","classes":"",
+"style": {"background-color": "#ffffff", "color": "#000000", "shape": "rectangle"}},
+{"data":{"group":"nodes","id":"04_AA1","label":"AA1"},"position":{"x":246.9052347599775,"y":231.40500589902263},"group":"nodes","classes":"",
+"style": {"background-color": "#00ff00", "color": "#000000", "shape": "rectangle"}},
+{"data":{"group":"nodes","id":"04_AAA1","label":"AAA1","parent":"04_AA1"},"position":{"x":308.8053023985838,"y":258.7812976793654},"group":"nodes","classes":"",
+"style": {"background-color": "#9dbaea", "color": "#000000", "shape": "rectangle"}},
+{"data":{"group":"nodes","id":"9u7b7pj38no","label":"AAA1","parent":"04_AA1"},"position":{"x":208.2321871780487,"y":152.87621549335773},"group":"nodes","classes":"",
+"style": {"background-color": "#9dbaea", "color": "#000000", "shape": "rectangle"}},
+{"data":{"group":"nodes","id":"11lf3mcuoqs","label":"A1","parent":"9u7b7pj38no"},"position":{"x":252.947281162102,"y":151.02165001948723},"group":"nodes","classes":"",
+"style": {"background-color": "#ffffff", "color": "#000000", "shape": "rectangle"}},
+{"data":{"group":"nodes","id":"mjs3onuq8hg","label":"A2","parent":"9u7b7pj38no"},"position":{"x":163.51709319399538,"y":154.73078096722824},"group":"nodes","classes":"",
+"style": {"background-color": "#ffffff", "color": "#000000", "shape": "rectangle"}},
+{"data":{"group":"nodes","id":"j50eu8l8t4","label":"AA1","parent":null},"position":{"x":600.2896917023926,"y":284.4002202125762},"group":"nodes","classes":"",
+"style": {"background-color": "#00ff00", "color": "#000000", "shape": "rectangle"}},
+{"data":{"group":"nodes","id":"6gt42mgd4r4","label":"AAA1","parent":"j50eu8l8t4"},"position":{"x":613.2823987422462,"y":350.5973488007082},"group":"nodes","classes":"",
+"style": {"background-color": "#9dbaea", "color": "#000000", "shape": "rectangle"}},
+{"data":{"group":"nodes","id":"20sh6qhdvk8","label":"A1","parent":"6gt42mgd4r4"},"position":{"x":559.8004404251507,"y":306.5961714508424},"group":"nodes","classes":"",
+"style": {"background-color": "#ffffff", "color": "#000000", "shape": "rectangle"}},
+{"data":{"group":"nodes","id":"64iv2lvho4c","label":"A2","parent":"6gt42mgd4r4"},"position":{"x":654.204268974308,"y":285.18512622852256},"group":"nodes","classes":"",
+"style": {"background-color": "#ffffff", "color": "#000000", "shape": "rectangle"}},
+{"data":{"group":"nodes","id":"pthbjqckv6s","label":"AAA1","parent":"j50eu8l8t4"},"position":{"x":561.2368965775086,"y":170.003608336581},"group":"nodes","classes":"",
+"style": {"background-color": "#9dbaea", "color": "#000000", "shape": "rectangle"}},
+{"data":{"group":"nodes","id":"30m5a0a6pm8","label":"A1","parent":"pthbjqckv6s"},"position":{"x":528.3078096722827,"y":169.29086905225864},"group":"nodes","classes":"",
+"style": {"background-color": "#ffffff", "color": "#000000", "shape": "rectangle"}},
+{"data":{"group":"nodes","id":"f0bdpncc8jg","label":"A2","parent":"pthbjqckv6s"},"position":{"x":594.1659834827344,"y":170.71634762090338},"group":"nodes","classes":"",
+"style": {"background-color": "#ffffff", "color": "#000000", "shape": "rectangle"}},
+{"data":{"group":"nodes","id":"sfcf0j9nlac","label":"AAA1","parent":"04_AA1"},"position":{"x":184.43425402659702,"y":327.5756224942357},"group":"nodes","classes":"",
+"style": {"background-color": "#9dbaea", "color": "#000000", "shape": "rectangle"}},
+{"data":{"group":"nodes","id":"v2800lc7dcg","label":"A1","parent":"sfcf0j9nlac"},"position":{"x":151.5051671213712,"y":326.8628832099134},"group":"nodes","classes":"",
+"style": {"background-color": "#ffffff", "color": "#000000", "shape": "rectangle"}},
+{"data":{"group":"nodes","id":"vt37bbuea3","label":"A2","parent":"sfcf0j9nlac"},"position":{"x":217.36334093182285,"y":328.288361778558},"group":"nodes","classes":"",
+"style": {"background-color": "#ffffff", "color": "#000000", "shape": "rectangle"}},
+{"data":{"group":"nodes","id":"rkoo3d4jjkc","label":"AAA1","parent":"6gt42mgd4r4"},"position":{"x":613.2823987422462,"y":396.9422666147009},"group":"nodes","classes":"",
+"style": {"background-color": "#ff8040", "color": "#000000", "shape": "rectangle"}},
+{"data":{"group":"nodes","id":"6cvbc66qfdo","label":"A1","parent":"rkoo3d4jjkc"},"position":{"x":567.7932237519898,"y":402.5095713728938},"group":"nodes","classes":"",
+"style": {"background-color": "#ffffff", "color": "#000000", "shape": "rectangle"}},
+{"data":{"group":"nodes","id":"vmj0gu0ve7s","label":"A2","parent":"rkoo3d4jjkc"},"position":{"x":658.7715737325025,"y":391.374961856508},"group":"nodes","classes":"",
+"style": {"background-color": "#ffffff", "color": "#000000", "shape": "rectangle"}},
+{"data":{"source":"6cvbc66qfdo","target":"04_AA1","id":"6f6b79db-9168-4a4c-88ec-89f87346213c"},"position":{"x":0,"y":0},"group":"edges","classes":"",
+"style": {"color": "#000000", "line-color": "#da1725", "target-arrow-color": "#da1725", "target-arrow-shape":
+"triangle", "source-arrow-color": "#999999", "source-arrow-shape": "none"}},
+{"data":{"source":"64iv2lvho4c","target":"04_AA1","id":"a5d674a6-9f64-4a99-9a12-d2a73dc3c60a"},"position":{"x":0,"y":0},"group":"edges","classes":"",
+"style": {"color": "#000000", "line-color": "#da1725", "target-arrow-color": "#da1725", "target-arrow-shape":
+"triangle", "source-arrow-color": "#999999", "source-arrow-shape": "none"}},
+{"data":{"source":"6gt42mgd4r4","target":"pthbjqckv6s","id":"73196cc3-887d-4500-a2b6-2610351f1eea"},"position":{"x":0,"y":0},"group":"edges","classes":"",
+"style": {"color": "#000000", "line-color": "#da1725", "target-arrow-color": "#da1725", "target-arrow-shape":
+"triangle", "source-arrow-color": "#999999", "source-arrow-shape": "none"}},
+{"data":{"source":"vt37bbuea3","target":"9u7b7pj38no","id":"3929c163-4a49-4519-860f-8f5b559371dc"},"position":{"x":0,"y":0},"group":"edges","classes":"",
+"style": {"color": "#000000", "line-color": "#da1725", "target-arrow-color": "#da1725", "target-arrow-shape":
+"triangle", "source-arrow-color": "#999999", "source-arrow-shape": "none"}},
+{"data":{"source":"04_A1","target":"sfcf0j9nlac","id":"5fe51854-2375-4986-b687-6627cc61a4c8"},"position":{"x":0,"y":0},"group":"edges","classes":"",
+"style": {"color": "#000000", "line-color": "#da1725", "target-arrow-color": "#da1725", "target-arrow-shape":
+"triangle", "source-arrow-color": "#999999", "source-arrow-shape": "none"}},
+{"data":{"source":"v2800lc7dcg","target":"9u7b7pj38no","id":"46843aa6-c798-4a84-8988-ef6ee7126b91"},"position":{"x":0,"y":0},"group":"edges","classes":"",
+"style": {"color": "#000000", "line-color": "#da1725", "target-arrow-color": "#da1725", "target-arrow-shape":
+"triangle", "source-arrow-color": "#999999", "source-arrow-shape": "none"}},
+{"data":{"source":"30m5a0a6pm8","target":"9u7b7pj38no","id":"63f8b5b2-78d0-4695-a5f7-4a79586033e1"},"position":{"x":0,"y":0},"group":"edges","classes":"",
+"style": {"color": "#000000", "line-color": "#da1725", "target-arrow-color": "#da1725", "target-arrow-shape":
+"triangle", "source-arrow-color": "#999999", "source-arrow-shape": "none"}},
+{"data":{"source":"20sh6qhdvk8","target":"rkoo3d4jjkc","id":"b9628d37-ba3d-403d-91d6-3ecf8571944d"},"position":{"x":0,"y":0},"group":"edges","classes":"",
+"style": {"color": "#000000", "line-color": "#da1725", "target-arrow-color": "#da1725", "target-arrow-shape":
+"triangle", "source-arrow-color": "#999999", "source-arrow-shape": "none"}},
+{"data":{"source":"64iv2lvho4c","target":"vmj0gu0ve7s","id":"6855473e-4a44-4631-9954-bae680918621"},"position":{"x":0,"y":0},"group":"edges","classes":"",
+"style": {"color": "#000000", "line-color": "#da1725", "target-arrow-color": "#da1725", "target-arrow-shape":
+"triangle", "source-arrow-color": "#999999", "source-arrow-shape": "none"}},
+{"data":{"source":"pthbjqckv6s","target":"04_A2","id":"8088cc19-9e33-4b90-87da-124171b04905"},"position":{"x":0,"y":0},"group":"edges","classes":"",
+"style": {"color": "#000000", "line-color": "#da1725", "target-arrow-color": "#da1725", "target-arrow-shape":
+"triangle", "source-arrow-color": "#999999", "source-arrow-shape": "none"}},
+{"data":{"source":"11lf3mcuoqs","target":"04_AA1","id":"a725f972-ce15-47a9-a11e-9406d4466107"},"position":{"x":0,"y":0},"group":"edges","classes":"",
+"style": {"color": "#000000", "line-color": "#da1725", "target-arrow-color": "#da1725", "target-arrow-shape":
+"triangle", "source-arrow-color": "#999999", "source-arrow-shape": "none"}},
+{"data":{"source":"9u7b7pj38no","target":"j50eu8l8t4","id":"474cf218-172d-49c5-b4f8-4edf868d703d"},"position":{"x":0,"y":0},"group":"edges","classes":"",
+"style": {"color": "#000000", "line-color": "#da1725", "target-arrow-color": "#da1725", "target-arrow-shape":
+"triangle", "source-arrow-color": "#999999", "source-arrow-shape": "none"}},
+{"data":{"source":"04_AA1","target":"mjs3onuq8hg","id":"4dcb7189-e2e4-4ccf-b3e1-563d27a03ab9"},"position":{"x":0,"y":0},"group":"edges","classes":"",
+"style": {"color": "#000000", "line-color": "#da1725", "target-arrow-color": "#da1725", "target-arrow-shape":
+"triangle", "source-arrow-color": "#999999", "source-arrow-shape": "none"}}
+]
+                </textarea><br>
+
+                <button onclick="graphJsonCopy(`load-text-json-data`)">クリップボードにコピー</button><br><br>
+
+                <button class="modal__btn modal__btn-primary" id="load-text-json-button"
+                  data-micromodal-close>↑に貼ったJSONを読込みグラフ表示</button>
+              </div>
+
+              <div class="graph-load-json-panel">
+
+                <h2 class="modal__title" id="modal-1-title">
+                  PCからJSONを選択して読み込む
+                </h2><br>
+
+                選択するとすぐに読み込みます:<br>
+                <input type="file" accept=".json" id="load-json-file">
+                <br>
+                <textarea id="loaded-graph-json" cols="36" rows="15" readonly></textarea><br>
+
+              </div>
+            </div>
+          </main>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- JSONデータを追加する部分のモーダルウィンドウ -->
+    <div class="modal micromodal-slide" id="add-json-data-window" aria-hidden="true">
+      <div class="modal__overlay" tabindex="-1" data-micromodal-close>
+        <div class="modal__container" role="dialog" aria-modal="true" aria-labelledby="modal-1-title">
+          <header class="modal__header">
+            <h2 class="modal__title" id="modal-1-title">
+              現在のグラフにJSONからデータを追加する
+            </h2>
+            <button class="modal__close" aria-label="Close modal" data-micromodal-close></button>
+          </header>
+          <main class="modal__content" id="modal-1-content">
+            <p>要素のID重複すると追加失敗するので注意</p>
+
+            <div class="graph-add-window">
+
+              <div class="graph-add-textarea-panel">
+
+                <h2 class="modal__title" id="modal-1-title">
+                  JSONを↓にコピペして追加する
+                </h2><br>
+
+
+                <textarea id="graph-add-text-json-data" cols="36" rows="15"></textarea><br>
+                <button onclick="graphJsonCopy(`graph-add-text-json-data`)">クリップボードにコピー</button>
+
+                <br><br>
+                <button class="modal__btn modal__btn-primary" id="graph-add-text-json-button"
+                  data-micromodal-close>データを追加する</button>
+              </div>
+
+              <div class="graph-add-json-panel">
+                <h2 class="modal__title" id="modal-1-title">
+                  PCからJSONを選択して追加する
+                </h2><br>
+
+                選択するとすぐに追加します: <br>
+                <input type="file" accept=".json" id="add-json-file">
+                <br>
+                <textarea id="added-graph-json" cols="36" rows="15" readonly></textarea><br>
+              </div>
+
+
+            </div>
+
+            <br><br>
+
+          </main>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- 現在のグラフのJSONデータを保存する部分のモーダルウィンドウ -->
+    <div class="modal micromodal-slide" id="save-json-data-window" aria-hidden="true">
+      <div class="modal__overlay" tabindex="-1" data-micromodal-close>
+        <div class="modal__container" role="dialog" aria-modal="true" aria-labelledby="modal-1-title">
+          <header class="modal__header">
+            <h2 class="modal__title" id="modal-1-title">
+              JSONの保存
+            </h2>
+            <button class="modal__close" aria-label="Close modal" data-micromodal-close></button>
+          </header>
+          <main class="modal__content" id="modal-1-content">
+
+            <!-- JSONの保存-->
+            <!-- <p>ケツカンマが削除されていないJSONは、<br>処理しないとJSON.parseで読んだ時にエラー出る</p> -->
+            <!-- <button id="IdBtnSave" onclick="graphJsonSave_ALL()">ケツカンマそのまま保存</button> -->
+            <!-- <button id="IdBtnSave_P" onclick="graphJsonSave_P()">ケツカンマ削除して保存</button><br> -->
+            <textarea id="save-json-data" cols="48" rows="10"></textarea><br>
+            <button id="graph-json-copy-button" onclick="graphJsonCopy(`save-json-data`)">クリップボードにコピー</button>
+            <button id="graph-json-view-button">別タブで開く(名前を付けて保存可能)</button>
+            <br><br>
+
+            <p>
+              ファイル名
+              <input type="text" id="json-data-filename" value="test" style="width:150px;" /><br>
+              <div>
+                <button id="graph-json-save-txt-button" class="modal__btn-primary modal__btn">.txtで保存</button>
+                <button id="graph-json-save-json-button" class="modal__btn-primary modal__btn">.jsonで保存</button>
+              </div>
+              
+            </p>
+
+
+
+          </main>
+        </div>
+      </div>
+    </div>
+
+    <!-- 現在のグラフを画像として保存する部分のモーダルウィンドウ -->
+    <div class="modal micromodal-slide" id="save-json-image-window" aria-hidden="true">
+      <div class="modal__overlay" tabindex="-1" data-micromodal-close>
+        <div class="modal__container" role="dialog" aria-modal="true" aria-labelledby="modal-1-title">
+          <header class="modal__header">
+            <h2 class="modal__title" id="modal-1-title">
+
+            </h2>
+            <button class="modal__close" aria-label="Close modal" data-micromodal-close></button>
+          </header>
+          <main class="modal__content" id="modal-1-content">
+
+
+            <div class="graph-save-window">
+
+              <div class="png-save-panel">
+                <h2 class="modal__title">グラフをPNG画像として保存</h2>
+                <br>
+                <fieldset>
+
+                  <legend>保存の設定</legend>
+
+                  <p>PNG画像の保存範囲</p>
+                  <label><input type="radio" id="png-full-yes" name="png-full-image">全範囲</label>
+                  <label><input type="radio" id="png-full-no" name="png-full-image">写ってる部分だけ</label>
+
+                  <p>PNG画像のスケールの値(1が最低、5が普通、19が最大)</p>
+                  <input type="range" id="png-scale" min="1" max="19" step="1" value="5" />
+                  <input type="number" id="png-scale-num" min="1" max="19" value="5" style="width:55px;"><br>
+
+                  <p>PNG画像の背景色(背景透過も可能)</p>
+                  <p>
+                    <label><input type="radio" id="png-tras-yes" name="png-transparent" value="yes">透過する</label>
+                    <label><input type="radio" name="png-transparent" value="no" checked>透過しない</label>
+                    <input type="color" input id="color-picker"
+                      onchange="apply_colorpick(`color-picker-str`,`color-picker`)">
+                    <input type="text" id="color-picker-str" style="width:55px;">
+                    <button onclick="apply_colorpick(`color-picker`,`color-picker-str`)">◎</button>
+                  </p>
+
+
+                </fieldset>
+                <p>PNG画像を閲覧する(別ページ開く＋右クリックで保存も可能)</p>
+                <button id="view-png-page-button" class="modal__btn-primary modal__btn">ここをクリックでPNG画像を閲覧する</button>
+                <br>
+                <br>
+                <p>ファイル名(拡張子含まず)</p>
+                <input type="text" id="png-name" value="test" />
+                <div>
+                  <button id="download-png-button" class="modal__btn-primary modal__btn">ここをクリックでPNG画像を保存する</button>
+                </div>
+              </div>
+
+            </div>
+
+          </main>
+          <!-- <footer class="modal__footer">
+            <button class="modal__btn modal__btn-primary">Continue</button>
+            <button class="modal__btn" data-micromodal-close aria-label="Close this dialog window">Close</button>
+          </footer> -->
+        </div>
+      </div>
+    </div>
+
+
+    <!-- ======================================================================================================= -->
+
+    <!-- 自分が作ったスクリプト【MITライセンス】-->
+    <script type="module" src="main.mjs"></script>
+
+</body>
+
+</html>
