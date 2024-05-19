@@ -2,10 +2,16 @@
 - [目次](#目次)
 - [概要と機能](#概要と機能)
 - [このアプリを使用する方法](#このアプリを使用する方法)
+  - [npmとViteを使ってビルドする版](#npmとviteを使ってビルドする版)
+    - [説明](#説明)
+    - [npmのパッケージのインストール](#npmのパッケージのインストール)
+    - [httpプロトコルで動くやつをビルド(デフォルト)](#httpプロトコルで動くやつをビルドデフォルト)
+    - [httpプロトコル＋fileプロトコルでも動くやつをビルド](#httpプロトコルfileプロトコルでも動くやつをビルド)
+  - [CDNから読み込む版(更新停止)](#cdnから読み込む版更新停止)
 - [グラフデータ(json)のサンプル](#グラフデータjsonのサンプル)
 - [参考にしたアプリと記事(先駆者様)](#参考にしたアプリと記事先駆者様)
-- [使用しているライブラリとフォントのライセンス](#使用しているライブラリとフォントのライセンス)
-  - [ライブラリのライセンス](#ライブラリのライセンス)
+- [使用しているパッケージ(ライブラリ)とフォントのライセンス](#使用しているパッケージライブラリとフォントのライセンス)
+  - [パッケージ(ライブラリ)のライセンス](#パッケージライブラリのライセンス)
   - [フォントのライセンス](#フォントのライセンス)
 - [このリポジトリのライセンス](#このリポジトリのライセンス)
 
@@ -29,16 +35,51 @@ Cytoscape.jsのグラフをサクッと閲覧したい・PNG画像に出力し�
 
 
 # このアプリを使用する方法
-- オンライン：このリポジトリのGitHub Pagesにて使用できます。
 
-- ローカル：`html+JavaScript+css`だけで作られているウェブページなので、  
-このリポジトリのファイルをDLし、`index.html`をブラウザで開くと動きます。  
-※CDNからライブラリを読み込んでいるのでネット接続が必要です。  
+## npmとViteを使ってビルドする版
+
+### 説明  
+ `npm(Vite)`のディレクトリに入っているやつです。   
+  「vite」と「vite-plugin-singlefile」でビルドする仕様です。  
+ `node.js v22.2.0`と`npm v10.7.0`のインストールが必要です。  
+
+### npmのパッケージのインストール  
+このリポジトリをCloneし、`./npm(Vite)`でターミナルを開きます。  
+npmのコマンドを実行し必要パッケージをローカルにインストールします。  
+`cd npm(Vite)`  
+`npm install`  
+
+
+###  httpプロトコルで動くやつをビルド(デフォルト)  
+`npm run dev`  
+：Viteの機能でDEVサーバを起動してアプリを動作させます。  
+：コンソールに出てくるローカルホストにアクセスすると動きます。  
+`npm run build`  
+：distフォルダにhtmlとjsとcssが生成されます。  
+：それらをサーバーに設置してhttpプロトコルでアクセスすると動きます。
+
+###  httpプロトコル＋fileプロトコルでも動くやつをビルド  
+`npm run build-offline`  
+：`npm(Vite)/dist-offline`に`index.html`が生成されます。  
+：そのindex.htmlをブラウザで開くと動かすことができます。
+
+
+## CDNから読み込む版(更新停止)
+- `CDN@archived`のディレクトリに入っているやつです。  
+html内部で、JavaScriptのライブラリをCDNから読み込んでいます。   
+<b>CDNだと使用ライブラリの依存関係の管理が困難なので更新停止しました。</b>  
+<br>
+- html＋生のJavaScript+cssだけで作成しており、  
+JavaScriptのES Modules機能を使用していないウェブページなので、  
+ファイルをDLし`CDN@archived/index.html`をブラウザで開くと動きます。  
+※[同一オリジンポリシー](https://developer.mozilla.org/ja/docs/Web/Security/Same-origin_policy)に引っ掛かる機能を利用してないってことです。  
+※CDNからライブラリを読み込んでいるのでインターネット接続が必要です。  
 
 # グラフデータ(json)のサンプル
 「sample-json-data」のディレクトリにjson形式で入っています。  
-アプリ内の「データを読み込む(json)」ボタンに入力すると、グラフを表示させることが可能です。  
-Cytoscape.jsは、グラフのノードを入れ子構造のグループにすることが可能(グラフ系ライブラリの中では唯一？)
+アプリ内の「データを読み込む(json)」ボタンに入力すると、グラフ表示が可能。  
+Cytoscape.jsは、グラフのノードを入れ子構造のグループにできます  
+おそらく、グラフ系ライブラリの中では唯一の機能です。
 - 「00_simple.json」：三角関係みたいなグラフ
 - 「01_group.json」：何かのチームの関係性を表すグラフ
 - 「02_group2.json」：何かのチームと所属者の関係性を表すグラフ
@@ -60,52 +101,52 @@ https://hhsprings.pinoko.jp/site-hhs/2018/01/jquery-cytoscape-js-%E3%81%8A%E8%A9
 https://cse.google.com/cse?cx=006012754116484472402%3Aic62g4kqloc&ie=UTF-8&q=Cytoscape&sa=%E6%A4%9C%E7%B4%A2
 
 
-# 使用しているライブラリとフォントのライセンス
+# 使用しているパッケージ(ライブラリ)とフォントのライセンス
+`npm(Vite)/package.json`と  
+`CDN@archived/index.html`の下部の内容も参照してください。  
 
-##  ライブラリのライセンス
-全てMITライセンスです  
- https://opensource.org/license/mit/　
+##  パッケージ(ライブラリ)のライセンス
 
-- cytoscape.js(3.25.0)  
+- cytoscape.js ：MIT  
 Copyright (c) 2016-2022, The Cytoscape Consortium.  
 https://github.com/cytoscape/cytoscape.js/  
 
-- cytoscape.js-undo-redo  
+- cytoscape.js-undo-redo ：MIT    
 Copyright (c) 2019 iVis-at-Bilkent  
 https://github.com/iVis-at-Bilkent/cytoscape.js-undo-redo  
 
-- cytoscape.js-panzoom(2.5.3)  
+- cytoscape.js-panzoom ：MIT  　　
 Copyright (c) The Cytoscape Consortium  
 https://github.com/cytoscape/cytoscape.js-panzoom  
 
-  - jquery.js(3.6.0)  
+  - jquery.js ：MIT    
 Copyright OpenJS Foundation and other contributors,  
 https://openjsf.org/  
 https://github.com/jquery/jquery  
 
 
-- cytoscape.js-dagre(2.5.0)  
+- cytoscape.js-dagre ：MIT    
 Copyright (c) 2016-2018, 2020, The Cytoscape Consortium.  
 https://github.com/cytoscape/cytoscape.js-dagre  
 
-  - dagre.js(0.8.2)  
+  - dagre.js ：MIT    
 Copyright (c) 2012-2014 Chris Pettitt  
 https://github.com/dagrejs/dagre  
 
 
-- FileSaver.js(2.0.5)  
+- FileSaver.js ：MIT    
 Copyright © 2016 Eli Grey.  
 https://github.com/eligrey/FileSaver.js  
   
 
-- micromodal.min.js(0.4.10)  
+- micromodal.js ：MIT    
 Copyright (c) 2017 Indrashish Ghosh  
 https://github.com/Ghosh/micromodal  
 https://gist.github.com/ghosh/4f94cf497d7090359a5c9f81caf60699  
 
 
 ## フォントのライセンス
-- Font-Awesome(4.0.3)：cytoscape.js-panzoomが依存  
+- Font-Awesome：cytoscape.js-panzoomが依存  
 アイコンはCC BY 4.0、フォントはSIL OFL 1.1、コードはMIT  
 https://github.com/FortAwesome/Font-Awesome  
 
