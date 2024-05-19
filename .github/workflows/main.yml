@@ -1,5 +1,4 @@
 # Viteのサンプルより
-# https://ja.vitejs.dev/guide/static-deploy.html#github-pages
 
 # 静的コンテンツを GitHub Pages にデプロイするためのシンプルなワークフロー
 name: Deploy static content to Pages
@@ -23,12 +22,6 @@ concurrency:
   group: 'pages'
   cancel-in-progress: true
 
-# npm(Vite)のディレクトリで、ビルドを実行してデプロイする
-# 参照：https://ebc-2in2crc.hatenablog.jp/entry/2023/01/13/181801
-defaults:
-  run:
-    working-directory: npm(Vite)
-
 jobs:
   # デプロイするだけなので、単一のデプロイジョブ
   deploy:
@@ -37,6 +30,12 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
 
+    # npm(Vite)のディレクトリで、ビルドを実行してデプロイする
+    # 参照：https://ebc-2in2crc.hatenablog.jp/entry/2023/01/13/181801
+    defaults:
+      run:
+        working-directory: npm(Vite)
+        
     steps:
       - name: Checkout
         uses: actions/checkout@v4
