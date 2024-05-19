@@ -64,9 +64,12 @@ npm run build
 ```  
 ：`npm(Vite)/dist`にhtmlとjsとcssが生成されます。  
 ：それをサーバーに設置してhttpプロトコルでアクセスすると動く。
+<hr>
 
 ###  httpプロトコル＋fileプロトコルでも動くやつをビルド  
-`npm run build-offline`  
+```
+npm run build-offline
+```
 ：`npm(Vite)/dist-offline`に`index.html`が生成されます。  
 ：そのindex.htmlをブラウザで開くと動かすことができます。
 
