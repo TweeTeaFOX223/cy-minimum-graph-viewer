@@ -28,6 +28,7 @@ concurrency:
 defaults:
   run:
     working-directory: npm(Vite)
+
 jobs:
   # デプロイするだけなので、単一のデプロイジョブ
   deploy:
@@ -44,6 +45,9 @@ jobs:
         with:
           node-version: 22
           cache: 'npm'
+          # rootにpackage-lock.jsonがないとエラーになる現象への対応
+          # 参照：https://zenn.dev/nixieminton/articles/8b26a92feb26d8
+          cache-dependency-path: ./npm(Vite)/package-lock.json
       - name: Install dependencies
         run: npm install
       - name: Build
