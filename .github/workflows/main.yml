@@ -49,22 +49,23 @@ jobs:
           # 参照：https://zenn.dev/nixieminton/articles/8b26a92feb26d8
           cache-dependency-path: ./npm(Vite)/package-lock.json
       - name: Install dependencies
-        run: 
-          pwd
-          npm install
+        run: npm install
+        
       - name: Build
-        run:
-          pwd
-          npm run build
-          ls
-          tree
+        run: npm run build
+        
+      - name: check directory
+        run:  tree
+        
       - name: Setup Pages
         uses: actions/configure-pages@v4
+        
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
           # dist フォルダーのアップロード
-          path: 'dist'
+          path: '/dist'
+          
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
