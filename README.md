@@ -75,7 +75,8 @@ npm run build
 - `CDN@archived`のディレクトリに入っているやつです。  
 html内部で、JavaScriptのライブラリをCDNから読み込んでいます。   
 <b>CDNだと使用ライブラリの依存関係の管理が困難なので更新停止しました。</b>  
-<br>
+<br>  
+
 - html＋生のJavaScript+cssだけで作成しており、  
 JavaScriptのES Modules機能を使用していないウェブページなので、  
 ファイルをDLし`CDN@archived/index.html`をブラウザで開くと動きます。  
