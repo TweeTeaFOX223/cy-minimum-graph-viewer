@@ -46,17 +46,24 @@ Cytoscape.jsのグラフをサクッと閲覧したい・PNG画像に出力し�
 ### npmのパッケージのインストール  
 このリポジトリをCloneし、`./npm(Vite)`でターミナルを開きます。  
 npmのコマンドを実行し必要パッケージをローカルにインストールします。  
-`cd npm(Vite)`  
-`npm install`  
+```
+cd npm(Vite)  
+npm install
+```
 
 
 ###  httpプロトコルで動くやつをビルド(デフォルト)  
-`npm run dev`  
+```
+npm run dev
+```
 ：Viteの機能でDEVサーバを起動してアプリを動作させます。  
 ：コンソールに出てくるローカルホストにアクセスすると動きます。  
-`npm run build`  
-：distフォルダにhtmlとjsとcssが生成されます。  
-：それらをサーバーに設置してhttpプロトコルでアクセスすると動きます。
+<br>
+```
+npm run build
+```  
+：`npm(Vite)/dist`にhtmlとjsとcssが生成されます。  
+：それをサーバーに設置してhttpプロトコルでアクセスすると動く。
 
 ###  httpプロトコル＋fileプロトコルでも動くやつをビルド  
 `npm run build-offline`  
@@ -72,8 +79,9 @@ html内部で、JavaScriptのライブラリをCDNから読み込んでいます
 - html＋生のJavaScript+cssだけで作成しており、  
 JavaScriptのES Modules機能を使用していないウェブページなので、  
 ファイルをDLし`CDN@archived/index.html`をブラウザで開くと動きます。  
-※[同一オリジンポリシー](https://developer.mozilla.org/ja/docs/Web/Security/Same-origin_policy)に引っ掛かる機能を利用してないってことです。  
-※CDNからライブラリを読み込んでいるのでインターネット接続が必要です。  
+
+※ [同一オリジンポリシー](https://developer.mozilla.org/ja/docs/Web/Security/Same-origin_policy) に違反する機能を利用してないってことです。    
+※ CDNからライブラリを読み込んでいるのでインターネット接続が必要です。  
 
 # グラフデータ(json)のサンプル
 「sample-json-data」のディレクトリにjson形式で入っています。  
