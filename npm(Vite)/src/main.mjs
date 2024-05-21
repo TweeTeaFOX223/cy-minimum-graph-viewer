@@ -443,6 +443,7 @@ const apply_colorpick = function (colorpick_id, inputcolor_id) {
 
   colorpicker.value = input_color.value;
 };
+window.apply_colorpick = apply_colorpick;
 
 //ファイルに使用できない記号を置換する
 const filename_replace = function (target_string) {
@@ -545,6 +546,7 @@ const changeLayout = function () {
   });
   layout.run();
 };
+window.changeLayout = changeLayout;
 
 //図のJSONをテキストエリアから読み込む
 document
@@ -756,6 +758,7 @@ const graphJsonCopy = function (target_string) {
   let Json = $(`#${target_string}`).val();
   navigator.clipboard.writeText(Json);
 };
+window.graphJsonCopy = graphJsonCopy;
 
 //保存したグラフのJSONを、blobにして別ページで見る処理
 const graphJsonView = function () {
@@ -901,6 +904,10 @@ const change_cy_edge_layout = function () {
     .style("curve-style", `${edge_curve.value}`)
     .update();
 };
+window.change_cy_edge_layout = change_cy_edge_layout;
+//htmlのbuttonのonclickで、このモジュール内の関数を使用できるようにする
+//本当ならaddEventListenerを使った方がいいらしい。
+//https://stackoverflow.com/questions/67518991/basic-vite-vanilla-setup
 
 //ページを更新する直前の処理
 window.addEventListener("beforeunload", function (event) {
