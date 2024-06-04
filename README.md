@@ -49,7 +49,7 @@ Cytoscape.jsは、グラフのノードを入れ子構造のグループにで�
 
 # ★このアプリを今すぐ使用する方法
 ## オンライン：GitHub Pagesで使用
-<b>npmとViteを使ってビルドしたものがGitHub Pagesにあります！</b>
+<b>npmとViteを使ってビルドしたものがGitHub Pagesにあります！</b>  
 https://tweeteafox223.github.io/cy-minimum-graph-viewer/
 
 ## ローカル・オフライン：ビルド済みの単一htmlを開いて使用
@@ -57,7 +57,7 @@ https://tweeteafox223.github.io/cy-minimum-graph-viewer/
 ブラウザでindex.htmlを開くことで使用可能です。  
 ローカルかつオフライン環境でも動作可能です。  
 
-下記のリンクに入り、右上の「・・・」ボタンを押すか、  
+下記のリンクに入り、右上の「・・・」→「Download」を押す、  
 又は、中央付近にある「↓」のボタンを押すとダウンロードできます。  
 https://github.com/TweeTeaFOX223/cy-minimum-graph-viewer/blob/main/npm(Vite)/dist-offline/index.html
 <br>
