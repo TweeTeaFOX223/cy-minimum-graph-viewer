@@ -2,7 +2,7 @@
 - [目次](#目次)
 - [概要と機能](#概要と機能)
 - [グラフデータ(json)のサンプル](#グラフデータjsonのサンプル)
-- [このアプリを今すぐ使用する方法](#このアプリを今すぐ使用する方法)
+- [★このアプリを今すぐ使用する方法](#このアプリを今すぐ使用する方法)
   - [オンライン：GitHub Pagesで使用](#オンラインgithub-pagesで使用)
   - [ローカル・オフライン：ビルド済みの単一htmlを開いて使用](#ローカルオフラインビルド済みの単一htmlを開いて使用)
 - [このアプリをビルドなどする方法](#このアプリをビルドなどする方法)
@@ -47,7 +47,7 @@ Cytoscape.jsは、グラフのノードを入れ子構造のグループにで�
 - 「03_group3.json」：マトリョーシカのような入れ子構造のグループ
 - 「04_group4.json」：入れ子構造のグループ同士の関係性のグラフ
 
-# このアプリを今すぐ使用する方法
+# ★このアプリを今すぐ使用する方法
 ## オンライン：GitHub Pagesで使用
 <b>npmとViteを使ってビルドしたものがGitHub Pagesにあります！</b>
 https://tweeteafox223.github.io/cy-minimum-graph-viewer/
@@ -56,6 +56,10 @@ https://tweeteafox223.github.io/cy-minimum-graph-viewer/
 `npm(Vite)/dist-offline/index.html`をダウンロードし、  
 ブラウザでindex.htmlを開くことで使用可能です。  
 ローカルかつオフライン環境でも動作可能です。  
+
+下記のリンクに入り、右上の「・・・」ボタンを押すか、  
+又は、中央付近にある「↓」のボタンを押すとダウンロードできます。  
+https://github.com/TweeTeaFOX223/cy-minimum-graph-viewer/blob/main/npm(Vite)/dist-offline/index.html
 <br>
 
 # このアプリをビルドなどする方法
