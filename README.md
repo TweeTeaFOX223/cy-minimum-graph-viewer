@@ -32,8 +32,22 @@ Cytoscape.jsのグラフをサクッと閲覧したい・PNG画像に出力し�
   - マウスでノードの座標を編集＋編集後のグラフデータをjsonで保存可能
   - マウスによる座標の編集は、取り消し「Ctrl+z」、やり直し「Ctrl+y」が可能
   - グラフをPNG画像で出力(画質、背景色、透過有無、対象範囲を設定可)
+<br>
 
+| 技術    | 使用しているもの                                   |
+| ---------- | ---------------------------------------------- |
+| 言語| html・JavaScript・css                 |
+| 開発とビルド   | viteとvite-plugin-singlefile(MITライセンス) |
+<br>  
 
+| JavaScriptの機能 | 使用しているライブラリ |
+| ---------- | ---------------------------------------------- |
+| グラフの表示全般| cytoscape.js(MITライセンス)                 |
+| グラフのundoとredo| cytoscape.js-undo-redo(MITライセンス)                 |
+| グラフのパンズーム| cytoscape.js-panzoom(MITライセンス)                 |
+| グラフの階層表示| cytoscape.js-dagre(MITライセンス)                 |
+| ファイルの保存とDL| FileSaver.js(MITライセンス)                 |
+| モーダルウィンドウ| Micromodal.js(MITライセンス)                 |
 <br>
 
 # グラフデータ(json)のサンプル
